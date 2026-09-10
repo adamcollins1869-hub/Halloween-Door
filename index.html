@@ -184,7 +184,80 @@
       SUPABASE_URL,
       SUPABASE_KEY
     );
+const voterTabBtn = document.getElementById('voterTabBtn');
+const adminTabBtn = document.getElementById('adminTabBtn');
 
+const voterView = document.getElementById('voterView');
+const adminView = document.getElementById('adminView');
+
+const adminLogin = document.getElementById('adminLogin');
+const adminPanel = document.getElementById('adminPanel');
+
+function showVoterView(){
+  voterView.style.display = 'block';
+  adminView.style.display = 'none';
+}
+
+function showAdminView(){
+  voterView.style.display = 'none';
+  adminView.style.display = 'block';
+}
+
+voterTabBtn.onclick = showVoterView;
+adminTabBtn.onclick = showAdminView;
+
+document.getElementById('loginForm').onsubmit = async (e) => {
+  e.preventDefault();
+
+  const email =
+    document.getElementById('adminEmail').value.trim();
+
+  const password =
+    document.getElementById('adminPassword').value;
+
+  const { error } =
+    await sb.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if(error){
+    const box = document.getElementById('loginMessage');
+
+    box.textContent = error.message;
+    box.className = 'message error show';
+
+    return;
+  }
+
+  adminLogin.style.display = 'none';
+  adminPanel.style.display = 'block';
+};
+
+document.getElementById('logoutBtn').onclick = async () => {
+  await sb.auth.signOut();
+
+  adminPanel.style.display = 'none';
+  adminLogin.style.display = 'block';
+};
+
+async function checkLogin(){
+
+  const {
+    data: { session }
+  } = await sb.auth.getSession();
+
+  if(session){
+    adminLogin.style.display = 'none';
+    adminPanel.style.display = 'block';
+  }else{
+    adminLogin.style.display = 'block';
+    adminPanel.style.display = 'none';
+  }
+
+}
+
+checkLogin();
   </script>
 
 </body>
