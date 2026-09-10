@@ -50,127 +50,127 @@
       color:#eadcf2;
     }
 
-    main{
-      width:min(92%,700px);
-      margin:28px auto;
-    }
+    <main>
 
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:22px;
-      box-shadow:0 6px 20px rgba(0,0,0,.28);
-    }
+  <div style="display:flex;gap:10px;margin-bottom:18px;">
 
-    h2{
-      margin-top:0;
-    }
+    <button
+      id="voterTabBtn"
+      class="primary"
+      type="button"
+    >
+      Voter
+    </button>
 
-    label{
-      display:block;
-      margin-bottom:8px;
-      font-weight:700;
-    }
+    <button
+      id="adminTabBtn"
+      type="button"
+      style="background:#6f3fa0;color:white;"
+    >
+      Admin
+    </button>
 
-    select{
-      width:100%;
-      padding:14px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      font-size:1rem;
-      margin-bottom:18px;
-    }
+  </div>
 
-    button{
-      width:100%;
-      padding:15px 18px;
-      border:0;
-      border-radius:10px;
-      font-size:1rem;
-      font-weight:700;
-      cursor:pointer;
-    }
+  <section id="voterView" class="card">
 
-    .primary{
-      background:var(--accent);
-      color:#1b1021;
-    }
+    <h2>Choose Your Favorite Door</h2>
 
-    .primary:hover{
-      background:var(--accent2);
-      color:white;
-    }
+    <p class="muted">
+      Select the number of the door you think has the best Halloween decorations.
+      Each browser/device may submit one vote per contest.
+    </p>
 
-    .message{
-      margin-top:16px;
-      padding:12px;
-      border-radius:10px;
-      display:none;
-    }
+    <form id="voteForm">
 
-    .message.show{
-      display:block;
-    }
+      <label for="doorNumber">🚪 Door Number</label>
 
-    .message.success{
-      background:#203d29;
-      border:1px solid var(--success);
-    }
+      <select id="doorNumber" required>
+        <option value="">Choose a door...</option>
+      </select>
 
-    .message.error{
-      background:#4a2222;
-      border:1px solid var(--danger);
-    }
+      <button
+        id="submitVoteBtn"
+        class="primary"
+        type="submit"
+      >
+        Submit Vote
+      </button>
 
-    .muted{
-      color:var(--muted);
-      line-height:1.5;
-    }
-  </style>
-</head>
+    </form>
 
-<body>
+    <div id="voteMessage" class="message"></div>
 
-  <header>
-    <h1>🎃 Halloween Door Voting 👻</h1>
-    <p>Vote for your favorite decorated door!</p>
-  </header>
+  </section>
 
-  <main>
+  <section
+    id="adminView"
+    class="card"
+    style="display:none;"
+  >
 
-    <section class="card">
+    <div id="adminLogin">
 
-      <h2>Choose Your Favorite Door</h2>
+      <h2>Admin Login</h2>
 
-      <p class="muted">
-        Select the number of the door you think has the best Halloween decorations.
-        Each browser/device may submit one vote per contest.
-      </p>
+      <form id="loginForm">
 
-      <form id="voteForm">
+        <label for="adminEmail">Email</label>
 
-        <label for="doorNumber">🚪 Door Number</label>
+        <input
+          id="adminEmail"
+          type="email"
+          required
+          style="width:100%;padding:14px;margin-bottom:14px;border-radius:10px;border:1px solid var(--border);"
+        >
 
-        <select id="doorNumber" required>
-          <option value="">Choose a door...</option>
-        </select>
+        <label for="adminPassword">Password</label>
+
+        <input
+          id="adminPassword"
+          type="password"
+          required
+          style="width:100%;padding:14px;margin-bottom:18px;border-radius:10px;border:1px solid var(--border);"
+        >
 
         <button
-          id="submitVoteBtn"
           class="primary"
           type="submit"
         >
-          Submit Vote
+          Log In
         </button>
 
       </form>
 
-      <div id="voteMessage" class="message"></div>
+      <div id="loginMessage" class="message"></div>
 
-    </section>
+    </div>
 
-  </main>
+    <div
+      id="adminPanel"
+      style="display:none;"
+    >
+
+      <h2>Halloween Door Voting Admin</h2>
+
+      <p class="muted">
+        Create contests, add anonymous door numbers,
+        open or close voting, and view final results.
+      </p>
+
+      <button
+        id="logoutBtn"
+        type="button"
+        style="background:#6f3fa0;color:white;"
+      >
+        Log Out
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
 
   <script>
 
