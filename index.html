@@ -5,26 +5,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Halloween Door Voting</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg:#18131f;
+      --card:#251d2e;
+      --text:#fff8e7;
+      --muted:#c9b8d3;
+      --accent:#f47c20;
+      --accent2:#d85d00;
+      --purple:#6f3fa0;
+      --border:#493850;
+      --success:#62b36f;
+      --danger:#c83d3d;
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      background:linear-gradient(135deg,#40205c,#6f3fa0);
+      border-bottom:4px solid var(--accent);
+      padding:22px 20px;
+      text-align:center;
+    }
+
+    header h1{
+      margin:0;
+      font-size:1.9rem;
+    }
+
+    header p{
+      margin:8px 0 0;
+      color:#eadcf2;
+    }
+
+    main{
+      width:min(92%,700px);
+      margin:28px auto;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:0 6px 20px rgba(0,0,0,.28);
+    }
+
+    h2{
+      margin-top:0;
+    }
+
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:700;
+    }
+
+    select{
+      width:100%;
+      padding:14px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      font-size:1rem;
+      margin-bottom:18px;
+    }
+
+    button{
+      width:100%;
+      padding:15px 18px;
+      border:0;
+      border-radius:10px;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .primary{
+      background:var(--accent);
+      color:#1b1021;
+    }
+
+    .primary:hover{
+      background:var(--accent2);
+      color:white;
+    }
+
+    .message{
+      margin-top:16px;
+      padding:12px;
+      border-radius:10px;
+      display:none;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.success{
+      background:#203d29;
+      border:1px solid var(--success);
+    }
+
+    .message.error{
+      background:#4a2222;
+      border:1px solid var(--danger);
+    }
+
+    .muted{
+      color:var(--muted);
+      line-height:1.5;
+    }
+  </style>
 </head>
 
 <body>
 
   <header>
     <h1>🎃 Halloween Door Voting 👻</h1>
-    <p>Vote for your favorite decorated Halloween door!</p>
+    <p>Vote for your favorite decorated door!</p>
   </header>
 
   <main>
-    <h2>Welcome!</h2>
 
-    <p>
-      Scan the contest QR code and vote for your favorite door.
-    </p>
+    <section class="card">
 
-    <p>
-      Each device may submit one vote per contest.
-    </p>
+      <h2>Choose Your Favorite Door</h2>
+
+      <p class="muted">
+        Select the number of the door you think has the best Halloween decorations.
+        Each browser/device may submit one vote per contest.
+      </p>
+
+      <form id="voteForm">
+
+        <label for="doorNumber">🚪 Door Number</label>
+
+        <select id="doorNumber" required>
+          <option value="">Choose a door...</option>
+        </select>
+
+        <button
+          id="submitVoteBtn"
+          class="primary"
+          type="submit"
+        >
+          Submit Vote
+        </button>
+
+      </form>
+
+      <div id="voteMessage" class="message"></div>
+
+    </section>
+
   </main>
+
+  <script>
+
+    const SUPABASE_URL =
+      'https://ckxfewxbptmgvfaqlzjp.supabase.co';
+
+    const SUPABASE_KEY =
+      'sb_publishable_b8SCdacNPrtX6XMV7slpOg_6mwc9NE6';
+
+    const sb = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+  </script>
 
 </body>
 </html>
