@@ -387,6 +387,33 @@ document.getElementById('loginForm').onsubmit = async (e) => {
   adminLogin.style.display = 'none';
   adminPanel.style.display = 'block';
 };
+    async function loadContests(){
+
+  const { data, error } = await sb
+    .from('contests')
+    .select('id,name')
+    .order('created_at', { ascending:false });
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  const select = document.getElementById('contestSelect');
+
+  select.innerHTML =
+    '<option value="">Choose a contest...</option>';
+
+  data.forEach(contest => {
+
+    const option = document.createElement('option');
+
+    option.value = contest.id;
+    option.textContent = contest.name;
+
+    select.appendChild(option);
+  });
+}
 document.getElementById('createContestForm').onsubmit = async (e) => {
   e.preventDefault();
 
@@ -420,12 +447,15 @@ document.getElementById('createContestForm').onsubmit = async (e) => {
 
   box.textContent = 'Contest created successfully.';
   box.className = 'message success show';
+  await loadContests();
 };
 document.getElementById('logoutBtn').onclick = async () => {
   await sb.auth.signOut();
 
   adminPanel.style.display = 'none';
   adminLogin.style.display = 'block';
+  await loadContests();
+  
 };
 
 async function checkLogin(){
@@ -437,6 +467,7 @@ async function checkLogin(){
   if(session){
     adminLogin.style.display = 'none';
     adminPanel.style.display = 'block';
+    await loadContests();
   }else{
     adminLogin.style.display = 'block';
     adminPanel.style.display = 'none';
