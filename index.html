@@ -562,7 +562,53 @@ async (e) => {
       ? '✅ Voting is OPEN'
       : '🔒 Voting is CLOSED';
 }
+async function loadVoterContest(){
 
+  const { data: contests, error } = await sb
+    .from('contests')
+    .select('id,name,voting_open')
+    .order('created_at', { ascending:false })
+    .limit(1);
+
+  if(error || !contests || !contests.length){
+    return;
+  }
+
+  const contest = contests[0];
+
+  const { data: doors, error: doorError } = await sb
+    .from('doors')
+    .select('door_number')
+    .eq('contest_id', contest.id)
+    .order('door_number');
+
+  if(doorError){
+    return;
+  }
+
+  const select =
+    document.getElementById('doorNumber');
+
+  select.innerHTML =
+    '<option value="">Choose a door...</option>';
+
+  doors.forEach(door => {
+
+    const option =
+      document.createElement('option');
+
+    option.value = door.door_number;
+    option.textContent =
+      `Door #${door.door_number}`;
+
+    select.appendChild(option);
+  });
+
+  document.getElementById('submitVoteBtn').disabled =
+    !contest.voting_open;
+
+  window.currentVoterContest = contest;
+}
 document.getElementById('openVotingBtn').onclick =
 async () => {
 
@@ -656,6 +702,7 @@ async function checkLogin(){
 }
 
 checkLogin();
+    loadVoterContest();
   </script>
 
 </body>
