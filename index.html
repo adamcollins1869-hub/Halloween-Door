@@ -479,7 +479,10 @@ document.getElementById('loginForm').onsubmit = async (e) => {
 }
 
     document.getElementById('contestSelect').onchange =
-  loadDoors;
+async () => {
+  await loadDoors();
+  await updateVotingStatus();
+};
 
 document.getElementById('addDoorForm').onsubmit =
 async (e) => {
@@ -528,6 +531,68 @@ async (e) => {
     'message success show';
 
   await loadDoors();
+};
+    async function updateVotingStatus(){
+
+  const contestId =
+    document.getElementById('contestSelect').value;
+
+  const status =
+    document.getElementById('votingStatus');
+
+  if(!contestId){
+    status.textContent =
+      'Select a contest to view voting status.';
+    return;
+  }
+
+  const { data, error } = await sb
+    .from('contests')
+    .select('voting_open')
+    .eq('id', contestId)
+    .single();
+
+  if(error){
+    status.textContent = error.message;
+    return;
+  }
+
+  status.textContent =
+    data.voting_open
+      ? '✅ Voting is OPEN'
+      : '🔒 Voting is CLOSED';
+}
+
+document.getElementById('openVotingBtn').onclick =
+async () => {
+
+  const contestId =
+    document.getElementById('contestSelect').value;
+
+  if(!contestId) return;
+
+  await sb
+    .from('contests')
+    .update({ voting_open:true })
+    .eq('id', contestId);
+
+  await updateVotingStatus();
+};
+
+document.getElementById('closeVotingBtn').onclick =
+async () => {
+
+  const contestId =
+    document.getElementById('contestSelect').value;
+
+  if(!contestId) return;
+
+  await sb
+    .from('contests')
+    .update({ voting_open:false })
+    .eq('id', contestId);
+
+  await updateVotingStatus();
 };
 document.getElementById('createContestForm').onsubmit = async (e) => {
   e.preventDefault();
