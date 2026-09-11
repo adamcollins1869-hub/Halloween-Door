@@ -563,6 +563,17 @@ async (e) => {
       ? '✅ Voting is OPEN'
       : '🔒 Voting is CLOSED';
 }
+    <div style="margin-top:24px;">
+
+  <h3>Results</h3>
+
+  <p id="ballotCount" class="muted">
+    Select a contest to view results.
+  </p>
+
+  <div id="resultsList" class="muted"></div>
+
+</div>
 async function loadVoterContest(){
 
   const { data: contests, error } = await sb
