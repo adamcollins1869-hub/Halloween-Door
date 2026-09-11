@@ -414,6 +414,93 @@ document.getElementById('loginForm').onsubmit = async (e) => {
     select.appendChild(option);
   });
 }
+    async function loadDoors(){
+
+  const contestId =
+    document.getElementById('contestSelect').value;
+
+  const list =
+    document.getElementById('doorList');
+
+  if(!contestId){
+    list.textContent =
+      'Select a contest to view its doors.';
+    return;
+  }
+
+  const { data, error } = await sb
+    .from('doors')
+    .select('id,door_number')
+    .eq('contest_id', contestId)
+    .order('door_number');
+
+  if(error){
+    list.textContent = error.message;
+    return;
+  }
+
+  if(!data.length){
+    list.textContent =
+      'No doors added yet.';
+    return;
+  }
+
+  list.innerHTML = data
+    .map(door => `🚪 Door #${door.door_number}`)
+    .join('<br>');
+}
+
+    document.getElementById('contestSelect').onchange =
+  loadDoors;
+
+document.getElementById('addDoorForm').onsubmit =
+async (e) => {
+
+  e.preventDefault();
+
+  const contestId =
+    document.getElementById('contestSelect').value;
+
+  const doorNumber =
+    document.getElementById('doorNumberAdmin')
+      .value.trim();
+
+  const box =
+    document.getElementById('doorMessage');
+
+  if(!contestId){
+    box.textContent =
+      'Please select a contest first.';
+    box.className =
+      'message error show';
+    return;
+  }
+
+  const { error } = await sb
+    .from('doors')
+    .insert({
+      contest_id: contestId,
+      door_number: doorNumber
+    });
+
+  if(error){
+    box.textContent = error.message;
+    box.className =
+      'message error show';
+    return;
+  }
+
+  document
+    .getElementById('addDoorForm')
+    .reset();
+
+  box.textContent =
+    'Door added successfully.';
+  box.className =
+    'message success show';
+
+  await loadDoors();
+};
 document.getElementById('createContestForm').onsubmit = async (e) => {
   e.preventDefault();
 
