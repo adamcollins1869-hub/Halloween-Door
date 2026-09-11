@@ -273,6 +273,45 @@ button{
   <div id="contestMessage" class="message"></div>
 
 </div>
+      <div style="margin:22px 0;">
+
+  <h3>Manage Contest</h3>
+
+  <label for="contestSelect">Select Contest</label>
+
+  <select id="contestSelect">
+    <option value="">Choose a contest...</option>
+  </select>
+
+  <form id="addDoorForm">
+
+    <label for="doorNumberAdmin">Door Number</label>
+
+    <input
+      id="doorNumberAdmin"
+      type="text"
+      placeholder="Example: 12"
+      required
+    >
+
+    <button
+      class="primary"
+      type="submit"
+    >
+      Add Door
+    </button>
+
+  </form>
+
+  <div id="doorMessage" class="message"></div>
+
+  <h3 style="margin-top:24px;">Doors</h3>
+
+  <div id="doorList" class="muted">
+    Select a contest to view its doors.
+  </div>
+
+</div>
       <button
         id="logoutBtn"
         type="button"
