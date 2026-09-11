@@ -609,6 +609,96 @@ async function loadVoterContest(){
 
   window.currentVoterContest = contest;
 }
+
+      document.getElementById('submitVoteBtn').disabled =
+    !contest.voting_open;
+
+  window.currentVoterContest = contest;
+}
+
+/* PASTE THE NEW BLOCK HERE */
+
+function getDeviceToken(contestId){
+
+  const key =
+    `halloween-voter-token-${contestId}`;
+
+  let token =
+    localStorage.getItem(key);
+
+  if(!token){
+    token =
+      crypto.randomUUID() +
+      crypto.randomUUID();
+
+    localStorage.setItem(
+      key,
+      token
+    );
+  }
+
+  return token;
+}
+    document.getElementById('voteForm').onsubmit =
+async (e) => {
+
+  e.preventDefault();
+
+  const contest =
+    window.currentVoterContest;
+
+  if(!contest){
+    return;
+  }
+
+  const doorNumber =
+    document.getElementById('doorNumber').value;
+
+  const token =
+    getDeviceToken(contest.id);
+
+  const { error } = await sb.rpc(
+    'submit_door_vote',
+    {
+      p_contest_id: contest.id,
+      p_door_number: doorNumber,
+      p_voter_token: token
+    }
+  );
+
+  const box =
+    document.getElementById('voteMessage');
+
+  if(error){
+
+    if(
+      error.message
+        .toLowerCase()
+        .includes('already')
+    ){
+      box.textContent =
+        'A vote has already been submitted from this browser/device.';
+    }else{
+      box.textContent =
+        error.message;
+    }
+
+    box.className =
+      'message error show';
+
+    return;
+  }
+
+  box.textContent =
+    'Vote submitted. Thank you! 🎃';
+
+  box.className =
+    'message success show';
+
+  document.getElementById(
+    'submitVoteBtn'
+  ).disabled = true;
+};
 document.getElementById('openVotingBtn').onclick =
 async () => {
 
