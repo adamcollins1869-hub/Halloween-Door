@@ -246,7 +246,33 @@ button{
         Create contests, add anonymous door numbers,
         open or close voting, and view final results.
       </p>
+<div style="margin:22px 0;">
 
+  <h3>Create Contest</h3>
+
+  <form id="createContestForm">
+
+    <label for="contestName">Contest Name</label>
+
+    <input
+      id="contestName"
+      type="text"
+      placeholder="Example: Halloween Door Contest 2026"
+      required
+    >
+
+    <button
+      class="primary"
+      type="submit"
+    >
+      Create Contest
+    </button>
+
+  </form>
+
+  <div id="contestMessage" class="message"></div>
+
+</div>
       <button
         id="logoutBtn"
         type="button"
@@ -322,7 +348,40 @@ document.getElementById('loginForm').onsubmit = async (e) => {
   adminLogin.style.display = 'none';
   adminPanel.style.display = 'block';
 };
+document.getElementById('createContestForm').onsubmit = async (e) => {
+  e.preventDefault();
 
+  const name =
+    document.getElementById('contestName').value.trim();
+
+  const {
+    data: { user }
+  } = await sb.auth.getUser();
+
+  if(!user){
+    return;
+  }
+
+  const { error } = await sb
+    .from('contests')
+    .insert({
+      name,
+      created_by:user.id
+    });
+
+  const box = document.getElementById('contestMessage');
+
+  if(error){
+    box.textContent = error.message;
+    box.className = 'message error show';
+    return;
+  }
+
+  document.getElementById('createContestForm').reset();
+
+  box.textContent = 'Contest created successfully.';
+  box.className = 'message success show';
+};
 document.getElementById('logoutBtn').onclick = async () => {
   await sb.auth.signOut();
 
