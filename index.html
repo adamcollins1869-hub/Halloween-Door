@@ -14,6 +14,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
   <style>
 
     :root{
@@ -141,6 +144,21 @@
       color:white;
     }
 
+    .danger{
+      background:var(--danger);
+      color:white;
+    }
+
+    .secondary{
+      background:#514259;
+      color:white;
+    }
+
+    .smallBtn{
+      font-size:.85rem;
+      padding:8px 11px;
+    }
+
     #voteForm .primary,
     #loginForm .primary,
     #logoutBtn{
@@ -182,20 +200,34 @@
     .buttonRow{
       display:flex;
       gap:10px;
+      flex-wrap:wrap;
     }
 
     .buttonRow button{
       flex:1;
+      min-width:130px;
     }
 
     .doorItem{
-      padding:10px 0;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+
+      padding:12px 0;
+
       border-bottom:
         1px solid var(--border);
     }
 
     .doorItem:last-child{
       border-bottom:0;
+    }
+
+    .doorButtons{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
     }
 
     .resultItem{
@@ -222,6 +254,67 @@
       font-weight:700;
     }
 
+    #qrCode{
+      background:white;
+      padding:14px;
+      width:max-content;
+      max-width:100%;
+      margin:18px auto;
+      border-radius:12px;
+    }
+
+    #qrCode img,
+    #qrCode canvas{
+      max-width:100%;
+      height:auto !important;
+    }
+
+    .votingLink{
+      background:#18131f;
+      border:1px solid var(--border);
+      padding:12px;
+      border-radius:10px;
+      word-break:break-all;
+      font-size:.9rem;
+      margin-bottom:14px;
+    }
+
+    .statusOpen{
+      color:#79d787;
+      font-weight:700;
+    }
+
+    .statusClosed{
+      color:#f2a4a4;
+      font-weight:700;
+    }
+
+    .studentMode main{
+      margin-top:20px;
+    }
+
+    @media(max-width:520px){
+
+      .doorItem{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .doorButtons{
+        width:100%;
+      }
+
+      .doorButtons button{
+        flex:1;
+      }
+
+      .resultItem{
+        flex-direction:column;
+        gap:4px;
+      }
+
+    }
+
   </style>
 
 </head>
@@ -246,9 +339,12 @@
 <main>
 
 
-  <!-- TABS -->
+  <!-- ===================== -->
+  <!-- TABS                  -->
+  <!-- ===================== -->
 
   <div
+    id="tabBar"
     style="
       display:flex;
       gap:10px;
@@ -285,7 +381,7 @@
     class="card"
   >
 
-    <h2>
+    <h2 id="voterContestName">
       Choose Your Favorite Door
     </h2>
 
@@ -301,6 +397,13 @@
       one vote per contest.
 
     </p>
+
+
+    <div
+      id="voterStatus"
+      class="muted"
+      style="margin-bottom:18px;"
+    ></div>
 
 
     <form id="voteForm">
@@ -417,9 +520,10 @@
       </h2>
 
       <p class="muted">
-        Create contests, add anonymous
-        door numbers, open or close
-        voting, and view results.
+        Create contests, manage anonymous
+        door numbers, control voting,
+        generate the student QR code,
+        and view results.
       </p>
 
 
@@ -489,7 +593,56 @@
 
 
 
-      <!-- ADD DOOR -->
+      <!-- QR CODE -->
+
+      <div class="section">
+
+        <h3>
+          Student Voting QR Code
+        </h3>
+
+        <p class="muted">
+          Select a contest and this QR code
+          will send students directly to that
+          contest's voting page.
+        </p>
+
+
+        <div
+          id="shareLink"
+          class="votingLink"
+        >
+          Select a contest to create its voting link.
+        </div>
+
+
+        <div class="buttonRow">
+
+          <button
+            id="copyLinkBtn"
+            class="primary"
+            type="button"
+            disabled
+          >
+            Copy Voting Link
+          </button>
+
+        </div>
+
+
+        <div id="qrCode"></div>
+
+
+        <div
+          id="copyMessage"
+          class="message"
+        ></div>
+
+      </div>
+
+
+
+      <!-- ADD / MANAGE DOORS -->
 
       <div class="section">
 
@@ -603,6 +756,54 @@
           class="muted"
         ></div>
 
+
+        <div
+          class="buttonRow"
+          style="margin-top:18px;"
+        >
+
+          <button
+            id="refreshResultsBtn"
+            class="secondary"
+            type="button"
+          >
+            Refresh Results
+          </button>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- RESET VOTES -->
+
+      <div class="section">
+
+        <h3>
+          Reset Contest Votes
+        </h3>
+
+        <p class="muted">
+          This permanently deletes all votes
+          from the selected contest so the
+          contest can start over.
+        </p>
+
+        <button
+          id="resetVotesBtn"
+          class="danger"
+          type="button"
+          style="width:100%;"
+        >
+          Reset All Votes
+        </button>
+
+        <div
+          id="resetMessage"
+          class="message"
+        ></div>
+
       </div>
 
 
@@ -652,6 +853,32 @@ const sb =
     SUPABASE_URL,
     SUPABASE_KEY
   );
+
+
+
+/* ========================= */
+/* URL SETTINGS              */
+/* ========================= */
+
+const pageUrl =
+  new URL(window.location.href);
+
+
+const requestedView =
+  pageUrl.searchParams.get(
+    'view'
+  );
+
+
+const requestedContestId =
+  pageUrl.searchParams.get(
+    'contest'
+  );
+
+
+const studentMode =
+  requestedView === 'voter' &&
+  requestedContestId;
 
 
 
@@ -732,6 +959,27 @@ adminTabBtn.onclick =
 
 
 /* ========================= */
+/* STUDENT QR MODE           */
+/* ========================= */
+
+if(studentMode){
+
+  document.body.classList.add(
+    'studentMode'
+  );
+
+  document.getElementById(
+    'tabBar'
+  ).style.display =
+    'none';
+
+  showVoterView();
+
+}
+
+
+
+/* ========================= */
 /* ADMIN LOGIN               */
 /* ========================= */
 
@@ -783,7 +1031,9 @@ async (e) => {
 
 
   document
-    .getElementById('loginMessage')
+    .getElementById(
+      'loginMessage'
+    )
     .className =
       'message';
 
@@ -836,6 +1086,10 @@ async function loadContests(){
     );
 
 
+  const oldValue =
+    select.value;
+
+
   select.innerHTML =
     '<option value="">Choose a contest...</option>';
 
@@ -858,6 +1112,20 @@ async function loadContests(){
     );
 
   });
+
+
+  if(
+    oldValue &&
+    data.some(
+      contest =>
+        contest.id === oldValue
+    )
+  ){
+
+    select.value =
+      oldValue;
+
+  }
 
 }
 
@@ -893,19 +1161,24 @@ async (e) => {
 
 
   if(!user){
-
     return;
-
   }
 
 
-  const { error } =
+  const {
+    data,
+    error
+  } =
     await sb
       .from('contests')
       .insert({
         name:name,
         created_by:user.id
-      });
+      })
+      .select(
+        'id'
+      )
+      .single();
 
 
   const box =
@@ -943,6 +1216,21 @@ async (e) => {
 
 
   await loadContests();
+
+
+  if(data?.id){
+
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value =
+        data.id;
+
+
+    await loadSelectedContest();
+
+  }
 
 };
 
@@ -1013,15 +1301,120 @@ async function loadDoors(){
   }
 
 
-  list.innerHTML =
-    data
-      .map(
-        door =>
-          `<div class="doorItem">
-             🚪 Door #${door.door_number}
-           </div>`
-      )
-      .join('');
+  list.innerHTML = '';
+
+
+  data.forEach(
+    door => {
+
+      const item =
+        document.createElement(
+          'div'
+        );
+
+
+      item.className =
+        'doorItem';
+
+
+      const name =
+        document.createElement(
+          'div'
+        );
+
+
+      name.textContent =
+        `🚪 Door #${door.door_number}`;
+
+
+      const buttons =
+        document.createElement(
+          'div'
+        );
+
+
+      buttons.className =
+        'doorButtons';
+
+
+      const editButton =
+        document.createElement(
+          'button'
+        );
+
+
+      editButton.type =
+        'button';
+
+
+      editButton.className =
+        'secondary smallBtn';
+
+
+      editButton.textContent =
+        'Edit';
+
+
+      editButton.onclick =
+        () =>
+          editDoor(
+            door.id,
+            door.door_number
+          );
+
+
+      const deleteButton =
+        document.createElement(
+          'button'
+        );
+
+
+      deleteButton.type =
+        'button';
+
+
+      deleteButton.className =
+        'danger smallBtn';
+
+
+      deleteButton.textContent =
+        'Delete';
+
+
+      deleteButton.onclick =
+        () =>
+          deleteDoor(
+            door.id,
+            door.door_number
+          );
+
+
+      buttons.appendChild(
+        editButton
+      );
+
+
+      buttons.appendChild(
+        deleteButton
+      );
+
+
+      item.appendChild(
+        name
+      );
+
+
+      item.appendChild(
+        buttons
+      );
+
+
+      list.appendChild(
+        item
+      );
+
+    }
+  );
 
 }
 
@@ -1125,6 +1518,131 @@ async (e) => {
 
 
 /* ========================= */
+/* EDIT DOOR                 */
+/* ========================= */
+
+async function editDoor(
+  doorId,
+  currentNumber
+){
+
+  const newNumber =
+    prompt(
+      'Enter the new door number:',
+      currentNumber
+    );
+
+
+  if(newNumber === null){
+    return;
+  }
+
+
+  const cleanedNumber =
+    newNumber.trim();
+
+
+  if(!cleanedNumber){
+    return;
+  }
+
+
+  if(
+    cleanedNumber ===
+    currentNumber
+  ){
+    return;
+  }
+
+
+  const { error } =
+    await sb
+      .from('doors')
+      .update({
+        door_number:
+          cleanedNumber
+      })
+      .eq(
+        'id',
+        doorId
+      );
+
+
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await loadDoors();
+
+  await loadVoterContest();
+
+  await loadResults();
+
+}
+
+
+
+/* ========================= */
+/* DELETE DOOR               */
+/* ========================= */
+
+async function deleteDoor(
+  doorId,
+  doorNumber
+){
+
+  const confirmed =
+    confirm(
+      `Delete Door #${doorNumber}?\n\n` +
+      `If this door already has votes, ` +
+      `those votes will also be deleted.`
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  const { error } =
+    await sb
+      .from('doors')
+      .delete()
+      .eq(
+        'id',
+        doorId
+      );
+
+
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await loadDoors();
+
+  await loadVoterContest();
+
+  await loadResults();
+
+}
+
+
+
+/* ========================= */
 /* VOTING STATUS             */
 /* ========================= */
 
@@ -1177,10 +1695,17 @@ async function updateVotingStatus(){
   }
 
 
-  status.textContent =
-    data.voting_open
-      ? '✅ Voting is OPEN'
-      : '🔒 Voting is CLOSED';
+  if(data.voting_open){
+
+    status.innerHTML =
+      '<span class="statusOpen">✅ Voting is OPEN</span>';
+
+  }else{
+
+    status.innerHTML =
+      '<span class="statusClosed">🔒 Voting is CLOSED</span>';
+
+  }
 
 }
 
@@ -1226,8 +1751,8 @@ async function loadResults(){
 
 
   const {
-    data: contest,
-    error: contestError
+    data:contest,
+    error:contestError
   } =
     await sb
       .from('contests')
@@ -1296,12 +1821,6 @@ async function loadResults(){
      </span>`;
 
 
-  /*
-    While voting is open,
-    show ballot count but
-    hide individual results.
-  */
-
   if(contest.voting_open){
 
     resultsBox.innerHTML =
@@ -1322,25 +1841,45 @@ async function loadResults(){
   }
 
 
-  let rank = 1;
+  let displayedRank =
+    0;
+
+
+  let previousVotes =
+    null;
 
 
   resultsBox.innerHTML =
     data
       .map(
-        door => {
+        (door,index) => {
 
           const votes =
             Number(
               door.votes
             );
 
-          const result =
-            `
+
+          if(
+            previousVotes === null ||
+            votes !== previousVotes
+          ){
+
+            displayedRank =
+              index + 1;
+
+          }
+
+
+          previousVotes =
+            votes;
+
+
+          return `
             <div class="resultItem">
 
               <span class="resultRank">
-                ${rank}.
+                ${displayedRank}.
                 🚪 Door #${door.door_number}
               </span>
 
@@ -1350,11 +1889,7 @@ async function loadResults(){
               </span>
 
             </div>
-            `;
-
-          rank++;
-
-          return result;
+          `;
 
         }
       )
@@ -1365,8 +1900,186 @@ async function loadResults(){
 
 
 /* ========================= */
-/* CONTEST SELECTION         */
+/* SHARE LINK + QR CODE      */
 /* ========================= */
+
+function updateShareLink(){
+
+  const contestId =
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value;
+
+
+  const shareBox =
+    document.getElementById(
+      'shareLink'
+    );
+
+
+  const copyButton =
+    document.getElementById(
+      'copyLinkBtn'
+    );
+
+
+  const qrBox =
+    document.getElementById(
+      'qrCode'
+    );
+
+
+  qrBox.innerHTML =
+    '';
+
+
+  if(!contestId){
+
+    shareBox.textContent =
+      'Select a contest to create its voting link.';
+
+    copyButton.disabled =
+      true;
+
+    window.currentVotingLink =
+      null;
+
+    return;
+
+  }
+
+
+  const url =
+    new URL(
+      window.location.href
+    );
+
+
+  url.search =
+    '';
+
+
+  url.hash =
+    '';
+
+
+  url.searchParams.set(
+    'view',
+    'voter'
+  );
+
+
+  url.searchParams.set(
+    'contest',
+    contestId
+  );
+
+
+  const link =
+    url.toString();
+
+
+  window.currentVotingLink =
+    link;
+
+
+  shareBox.textContent =
+    link;
+
+
+  copyButton.disabled =
+    false;
+
+
+  new QRCode(
+    qrBox,
+    {
+      text:link,
+      width:220,
+      height:220,
+      correctLevel:
+        QRCode.CorrectLevel.H
+    }
+  );
+
+}
+
+
+
+/* ========================= */
+/* COPY LINK                 */
+/* ========================= */
+
+document
+  .getElementById(
+    'copyLinkBtn'
+  )
+  .onclick =
+async () => {
+
+  const link =
+    window.currentVotingLink;
+
+
+  if(!link){
+    return;
+  }
+
+
+  const box =
+    document.getElementById(
+      'copyMessage'
+    );
+
+
+  try{
+
+    await navigator.clipboard
+      .writeText(
+        link
+      );
+
+
+    box.textContent =
+      'Voting link copied.';
+
+
+    box.className =
+      'message success show';
+
+  }catch(error){
+
+    box.textContent =
+      'Unable to copy automatically. Press and hold the voting link above to copy it.';
+
+
+    box.className =
+      'message error show';
+
+  }
+
+};
+
+
+
+/* ========================= */
+/* SELECTED CONTEST LOAD     */
+/* ========================= */
+
+async function loadSelectedContest(){
+
+  await loadDoors();
+
+  await updateVotingStatus();
+
+  await loadResults();
+
+  updateShareLink();
+
+}
+
 
 document
   .getElementById(
@@ -1375,11 +2088,7 @@ document
   .onchange =
 async () => {
 
-  await loadDoors();
-
-  await updateVotingStatus();
-
-  await loadResults();
+  await loadSelectedContest();
 
 };
 
@@ -1405,6 +2114,10 @@ async () => {
 
 
   if(!contestId){
+
+    alert(
+      'Please select a contest first.'
+    );
 
     return;
 
@@ -1465,6 +2178,10 @@ async () => {
 
   if(!contestId){
 
+    alert(
+      'Please select a contest first.'
+    );
+
     return;
 
   }
@@ -1504,27 +2221,173 @@ async () => {
 
 
 /* ========================= */
+/* REFRESH RESULTS           */
+/* ========================= */
+
+document
+  .getElementById(
+    'refreshResultsBtn'
+  )
+  .onclick =
+async () => {
+
+  await loadResults();
+
+};
+
+
+
+/* ========================= */
+/* RESET ALL VOTES           */
+/* ========================= */
+
+document
+  .getElementById(
+    'resetVotesBtn'
+  )
+  .onclick =
+async () => {
+
+  const contestId =
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value;
+
+
+  if(!contestId){
+
+    alert(
+      'Please select a contest first.'
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+      'Are you sure you want to permanently delete ALL votes for this contest?\n\nThis cannot be undone.'
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  const secondConfirm =
+    confirm(
+      'Final warning: Reset every vote in this contest?'
+    );
+
+
+  if(!secondConfirm){
+    return;
+  }
+
+
+  const { error } =
+    await sb
+      .from('ballots')
+      .delete()
+      .eq(
+        'contest_id',
+        contestId
+      );
+
+
+  const box =
+    document.getElementById(
+      'resetMessage'
+    );
+
+
+  if(error){
+
+    box.textContent =
+      error.message;
+
+    box.className =
+      'message error show';
+
+    return;
+
+  }
+
+
+  box.textContent =
+    'All votes have been reset.';
+
+
+  box.className =
+    'message success show';
+
+
+  await loadResults();
+
+};
+
+
+
+/* ========================= */
 /* LOAD VOTER CONTEST        */
 /* ========================= */
 
 async function loadVoterContest(){
 
+  let contestQuery =
+    sb
+      .from('contests')
+      .select(
+        'id,name,voting_open'
+      );
+
+
+  if(requestedContestId){
+
+    contestQuery =
+      contestQuery
+        .eq(
+          'id',
+          requestedContestId
+        )
+        .limit(1);
+
+  }else{
+
+    contestQuery =
+      contestQuery
+        .order(
+          'created_at',
+          {
+            ascending:false
+          }
+        )
+        .limit(1);
+
+  }
+
+
   const {
     data:contests,
     error
   } =
-    await sb
-      .from('contests')
-      .select(
-        'id,name,voting_open'
-      )
-      .order(
-        'created_at',
-        {
-          ascending:false
-        }
-      )
-      .limit(1);
+    await contestQuery;
+
+
+  const statusBox =
+    document.getElementById(
+      'voterStatus'
+    );
+
+
+  const voteButton =
+    document.getElementById(
+      'submitVoteBtn'
+    );
 
 
   if(
@@ -1533,6 +2396,12 @@ async function loadVoterContest(){
     !contests.length
   ){
 
+    statusBox.textContent =
+      'This contest could not be found.';
+
+    voteButton.disabled =
+      true;
+
     return;
 
   }
@@ -1540,6 +2409,14 @@ async function loadVoterContest(){
 
   const contest =
     contests[0];
+
+
+  document
+    .getElementById(
+      'voterContestName'
+    )
+    .textContent =
+      contest.name;
 
 
   const {
@@ -1561,6 +2438,9 @@ async function loadVoterContest(){
 
 
   if(doorError){
+
+    statusBox.textContent =
+      doorError.message;
 
     return;
 
@@ -1602,12 +2482,21 @@ async function loadVoterContest(){
   );
 
 
-  document
-    .getElementById(
-      'submitVoteBtn'
-    )
-    .disabled =
-      !contest.voting_open;
+  voteButton.disabled =
+    !contest.voting_open;
+
+
+  if(contest.voting_open){
+
+    statusBox.innerHTML =
+      '<span class="statusOpen">✅ Voting is open.</span>';
+
+  }else{
+
+    statusBox.innerHTML =
+      '<span class="statusClosed">🔒 Voting is currently closed.</span>';
+
+  }
 
 
   window.currentVoterContest =
@@ -1693,9 +2582,7 @@ async (e) => {
 
 
   if(!contest){
-
     return;
-
   }
 
 
@@ -1708,9 +2595,7 @@ async (e) => {
 
 
   if(!doorNumber){
-
     return;
-
   }
 
 
@@ -1857,6 +2742,39 @@ async function checkLogin(){
   }
 
 }
+
+
+
+/* ========================= */
+/* AUTO REFRESH ADMIN        */
+/* ========================= */
+
+setInterval(
+  async () => {
+
+    const contestId =
+      document
+        .getElementById(
+          'contestSelect'
+        )
+        .value;
+
+
+    if(
+      adminView.style.display !==
+        'none' &&
+      adminPanel.style.display !==
+        'none' &&
+      contestId
+    ){
+
+      await loadResults();
+
+    }
+
+  },
+  5000
+);
 
 
 
