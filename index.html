@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Halloween Door Voting</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     :root{
       --bg:#18131f;
       --card:#251d2e;
@@ -34,8 +41,16 @@
     }
 
     header{
-      background:linear-gradient(135deg,#40205c,#6f3fa0);
-      border-bottom:4px solid var(--accent);
+      background:
+        linear-gradient(
+          135deg,
+          #40205c,
+          #6f3fa0
+        );
+
+      border-bottom:
+        4px solid var(--accent);
+
       padding:22px 20px;
       text-align:center;
     }
@@ -45,103 +60,201 @@
       font-size:1.9rem;
     }
 
-   header p{
-  margin:8px 0 0;
-  color:#eadcf2;
-}
-main{
-  width:min(92%,700px);
-  margin:28px auto;
-}
+    header p{
+      margin:8px 0 0;
+      color:#eadcf2;
+    }
 
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:22px;
-  box-shadow:0 6px 20px rgba(0,0,0,.28);
-}
+    main{
+      width:min(92%,700px);
+      margin:28px auto;
+    }
 
-h2{
-  margin-top:0;
-}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:22px;
 
-label{
-  display:block;
-  margin-bottom:8px;
-  font-weight:700;
-}
+      box-shadow:
+        0 6px 20px
+        rgba(0,0,0,.28);
+    }
 
-select,
-input{
-  width:100%;
-  padding:14px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#fff;
-  color:#222;
-  font-size:1rem;
-  margin-bottom:18px;
-}
+    h2{
+      margin-top:0;
+    }
 
-button{
-  padding:12px 18px;
-  border:0;
-  border-radius:10px;
-  font-size:1rem;
-  font-weight:700;
-  cursor:pointer;
-}
+    h3{
+      margin-bottom:14px;
+    }
 
-.primary{
-  background:var(--accent);
-  color:#1b1021;
-}
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:700;
+    }
 
-.primary:hover{
-  background:var(--accent2);
-  color:white;
-}
+    select,
+    input{
+      width:100%;
+      padding:14px;
 
-#voteForm .primary,
-#loginForm .primary,
-#logoutBtn{
-  width:100%;
-}
+      border-radius:10px;
+      border:1px solid var(--border);
 
-.message{
-  margin-top:16px;
-  padding:12px;
-  border-radius:10px;
-  display:none;
-}
+      background:white;
+      color:#222;
 
-.message.show{
-  display:block;
-}
+      font-size:1rem;
+      margin-bottom:18px;
+    }
 
-.message.success{
-  background:#203d29;
-  border:1px solid var(--success);
-}
+    button{
+      padding:12px 18px;
+      border:0;
+      border-radius:10px;
 
-.message.error{
-  background:#4a2222;
-  border:1px solid var(--danger);
-}
+      font-size:1rem;
+      font-weight:700;
 
-.muted{
-  color:var(--muted);
-  line-height:1.5;
-}
-</style>
+      cursor:pointer;
+    }
+
+    button:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+    }
+
+    .primary{
+      background:var(--accent);
+      color:#1b1021;
+    }
+
+    .primary:hover:not(:disabled){
+      background:var(--accent2);
+      color:white;
+    }
+
+    .purple{
+      background:var(--purple);
+      color:white;
+    }
+
+    #voteForm .primary,
+    #loginForm .primary,
+    #logoutBtn{
+      width:100%;
+    }
+
+    .message{
+      margin-top:16px;
+      padding:12px;
+      border-radius:10px;
+      display:none;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.success{
+      background:#203d29;
+      border:1px solid var(--success);
+    }
+
+    .message.error{
+      background:#4a2222;
+      border:1px solid var(--danger);
+    }
+
+    .muted{
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .section{
+      margin-top:26px;
+      padding-top:20px;
+      border-top:1px solid var(--border);
+    }
+
+    .buttonRow{
+      display:flex;
+      gap:10px;
+    }
+
+    .buttonRow button{
+      flex:1;
+    }
+
+    .doorItem{
+      padding:10px 0;
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .doorItem:last-child{
+      border-bottom:0;
+    }
+
+    .resultItem{
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+
+      padding:11px 0;
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .resultItem:last-child{
+      border-bottom:0;
+    }
+
+    .resultRank{
+      font-weight:700;
+    }
+
+    .totalVotes{
+      font-size:1.05rem;
+      font-weight:700;
+    }
+
+  </style>
+
 </head>
+
 
 <body>
 
+
+<header>
+
+  <h1>
+    🎃 Halloween Door Voting 👻
+  </h1>
+
+  <p>
+    Vote for your favorite decorated door!
+  </p>
+
+</header>
+
+
 <main>
 
-  <div style="display:flex;gap:10px;margin-bottom:18px;">
+
+  <!-- TABS -->
+
+  <div
+    style="
+      display:flex;
+      gap:10px;
+      margin-bottom:18px;
+    "
+  >
 
     <button
       id="voterTabBtn"
@@ -151,33 +264,62 @@ button{
       Voter
     </button>
 
-   <button
-  id="adminTabBtn"
-  type="button"
-  onclick="document.getElementById('voterView').style.display='none';document.getElementById('adminView').style.display='block';"
-  style="background:#6f3fa0;color:white;"
->
-  Admin
-</button>
+    <button
+      id="adminTabBtn"
+      class="purple"
+      type="button"
+    >
+      Admin
+    </button>
 
   </div>
 
-  <section id="voterView" class="card">
 
-    <h2>Choose Your Favorite Door</h2>
+
+  <!-- ===================== -->
+  <!-- VOTER VIEW            -->
+  <!-- ===================== -->
+
+  <section
+    id="voterView"
+    class="card"
+  >
+
+    <h2>
+      Choose Your Favorite Door
+    </h2>
 
     <p class="muted">
-      Select the number of the door you think has the best Halloween decorations.
-      Each browser/device may submit one vote per contest.
+
+      Select the number of the door
+      you think has the best
+      Halloween decorations.
+
+      <br><br>
+
+      Each browser/device may submit
+      one vote per contest.
+
     </p>
+
 
     <form id="voteForm">
 
-      <label for="doorNumber">🚪 Door Number</label>
+      <label for="doorNumber">
+        🚪 Door Number
+      </label>
 
-      <select id="doorNumber" required>
-        <option value="">Choose a door...</option>
+      <select
+        id="doorNumber"
+        required
+      >
+
+        <option value="">
+          Choose a door...
+        </option>
+
       </select>
+
 
       <button
         id="submitVoteBtn"
@@ -189,9 +331,20 @@ button{
 
     </form>
 
-    <div id="voteMessage" class="message"></div>
+
+    <div
+      id="voteMessage"
+      class="message"
+    ></div>
+
 
   </section>
+
+
+
+  <!-- ===================== -->
+  <!-- ADMIN VIEW            -->
+  <!-- ===================== -->
 
   <section
     id="adminView"
@@ -199,29 +352,38 @@ button{
     style="display:none;"
   >
 
+
+    <!-- LOGIN -->
+
     <div id="adminLogin">
 
-      <h2>Admin Login</h2>
+      <h2>
+        Admin Login
+      </h2>
 
       <form id="loginForm">
 
-        <label for="adminEmail">Email</label>
+        <label for="adminEmail">
+          Email
+        </label>
 
         <input
           id="adminEmail"
           type="email"
           required
-          style="width:100%;padding:14px;margin-bottom:14px;border-radius:10px;border:1px solid var(--border);"
         >
 
-        <label for="adminPassword">Password</label>
+
+        <label for="adminPassword">
+          Password
+        </label>
 
         <input
           id="adminPassword"
           type="password"
           required
-          style="width:100%;padding:14px;margin-bottom:18px;border-radius:10px;border:1px solid var(--border);"
         >
+
 
         <button
           class="primary"
@@ -232,572 +394,1484 @@ button{
 
       </form>
 
-      <div id="loginMessage" class="message"></div>
+
+      <div
+        id="loginMessage"
+        class="message"
+      ></div>
 
     </div>
+
+
+
+    <!-- ADMIN PANEL -->
 
     <div
       id="adminPanel"
       style="display:none;"
     >
 
-      <h2>Halloween Door Voting Admin</h2>
+
+      <h2>
+        Halloween Door Voting Admin
+      </h2>
 
       <p class="muted">
-        Create contests, add anonymous door numbers,
-        open or close voting, and view final results.
+        Create contests, add anonymous
+        door numbers, open or close
+        voting, and view results.
       </p>
-<div style="margin:22px 0;">
 
-  <h3>Create Contest</h3>
 
-  <form id="createContestForm">
 
-    <label for="contestName">Contest Name</label>
+      <!-- CREATE CONTEST -->
 
-    <input
-      id="contestName"
-      type="text"
-      placeholder="Example: Halloween Door Contest 2026"
-      required
-    >
+      <div class="section">
 
-    <button
-      class="primary"
-      type="submit"
-    >
-      Create Contest
-    </button>
+        <h3>
+          Create Contest
+        </h3>
 
-  </form>
+        <form id="createContestForm">
 
-  <div id="contestMessage" class="message"></div>
+          <label for="contestName">
+            Contest Name
+          </label>
 
-</div>
-      <div style="margin:22px 0;">
+          <input
+            id="contestName"
+            type="text"
+            placeholder="Example: Halloween Door Contest 2026"
+            required
+          >
 
-  <h3>Manage Contest</h3>
+          <button
+            class="primary"
+            type="submit"
+          >
+            Create Contest
+          </button>
 
-  <label for="contestSelect">Select Contest</label>
+        </form>
 
-  <select id="contestSelect">
-    <option value="">Choose a contest...</option>
-  </select>
 
-  <form id="addDoorForm">
+        <div
+          id="contestMessage"
+          class="message"
+        ></div>
 
-    <label for="doorNumberAdmin">Door Number</label>
+      </div>
 
-    <input
-      id="doorNumberAdmin"
-      type="text"
-      placeholder="Example: 12"
-      required
-    >
 
-    <button
-      class="primary"
-      type="submit"
-    >
-      Add Door
-    </button>
 
-  </form>
+      <!-- SELECT CONTEST -->
 
-  <div id="doorMessage" class="message"></div>
+      <div class="section">
 
-  <h3 style="margin-top:24px;">Doors</h3>
+        <h3>
+          Manage Contest
+        </h3>
 
-  <div id="doorList" class="muted">
-    Select a contest to view its doors.
-  </div>
-<div style="margin-top:24px;">
 
-  <h3>Voting Status</h3>
+        <label for="contestSelect">
+          Select Contest
+        </label>
 
-  <p id="votingStatus" class="muted">
-    Select a contest to view voting status.
-  </p>
+        <select id="contestSelect">
 
-  <div style="display:flex;gap:10px;">
+          <option value="">
+            Choose a contest...
+          </option>
 
-    <button
-      id="openVotingBtn"
-      class="primary"
-      type="button"
-    >
-      Open Voting
-    </button>
+        </select>
 
-    <button
-      id="closeVotingBtn"
-      type="button"
-      style="background:#6f3fa0;color:white;"
-    >
-      Close Voting
-    </button>
+      </div>
 
-  </div>
 
-</div>
-</div>
-      <button
-        id="logoutBtn"
-        type="button"
-        style="background:#6f3fa0;color:white;"
-      >
-        Log Out
-      </button>
+
+      <!-- ADD DOOR -->
+
+      <div class="section">
+
+        <h3>
+          Add Door
+        </h3>
+
+        <form id="addDoorForm">
+
+          <label for="doorNumberAdmin">
+            Door Number
+          </label>
+
+          <input
+            id="doorNumberAdmin"
+            type="text"
+            placeholder="Example: 12"
+            required
+          >
+
+          <button
+            class="primary"
+            type="submit"
+          >
+            Add Door
+          </button>
+
+        </form>
+
+
+        <div
+          id="doorMessage"
+          class="message"
+        ></div>
+
+
+        <h3>
+          Doors
+        </h3>
+
+        <div
+          id="doorList"
+          class="muted"
+        >
+          Select a contest to view
+          its doors.
+        </div>
+
+      </div>
+
+
+
+      <!-- VOTING STATUS -->
+
+      <div class="section">
+
+        <h3>
+          Voting Status
+        </h3>
+
+        <p
+          id="votingStatus"
+          class="muted"
+        >
+          Select a contest to view
+          voting status.
+        </p>
+
+
+        <div class="buttonRow">
+
+          <button
+            id="openVotingBtn"
+            class="primary"
+            type="button"
+          >
+            Open Voting
+          </button>
+
+          <button
+            id="closeVotingBtn"
+            class="purple"
+            type="button"
+          >
+            Close Voting
+          </button>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- RESULTS -->
+
+      <div class="section">
+
+        <h3>
+          Results
+        </h3>
+
+        <p
+          id="ballotCount"
+          class="muted"
+        >
+          Select a contest to view results.
+        </p>
+
+        <div
+          id="resultsList"
+          class="muted"
+        ></div>
+
+      </div>
+
+
+
+      <!-- LOGOUT -->
+
+      <div class="section">
+
+        <button
+          id="logoutBtn"
+          class="purple"
+          type="button"
+        >
+          Log Out
+        </button>
+
+      </div>
+
 
     </div>
 
+
   </section>
+
 
 </main>
 
-  <script>
 
-    const SUPABASE_URL =
-      'https://ckxfewxbptmgvfaqlzjp.supabase.co';
 
-    const SUPABASE_KEY =
-      'sb_publishable_b8SCdacNPrtX6XMV7slpOg_6mwc9NE6';
+<script>
 
-    const sb = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-const voterTabBtn = document.getElementById('voterTabBtn');
-const adminTabBtn = document.getElementById('adminTabBtn');
 
-const voterView = document.getElementById('voterView');
-const adminView = document.getElementById('adminView');
+/* ========================= */
+/* SUPABASE                  */
+/* ========================= */
 
-const adminLogin = document.getElementById('adminLogin');
-const adminPanel = document.getElementById('adminPanel');
+const SUPABASE_URL =
+  'https://ckxfewxbptmgvfaqlzjp.supabase.co';
+
+
+const SUPABASE_KEY =
+  'sb_publishable_b8SCdacNPrtX6XMV7slpOg_6mwc9NE6';
+
+
+const sb =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+
+/* ========================= */
+/* ELEMENTS                  */
+/* ========================= */
+
+const voterTabBtn =
+  document.getElementById(
+    'voterTabBtn'
+  );
+
+
+const adminTabBtn =
+  document.getElementById(
+    'adminTabBtn'
+  );
+
+
+const voterView =
+  document.getElementById(
+    'voterView'
+  );
+
+
+const adminView =
+  document.getElementById(
+    'adminView'
+  );
+
+
+const adminLogin =
+  document.getElementById(
+    'adminLogin'
+  );
+
+
+const adminPanel =
+  document.getElementById(
+    'adminPanel'
+  );
+
+
+
+/* ========================= */
+/* VIEW SWITCHING            */
+/* ========================= */
 
 function showVoterView(){
-  voterView.style.display = 'block';
-  adminView.style.display = 'none';
+
+  voterView.style.display =
+    'block';
+
+  adminView.style.display =
+    'none';
+
 }
+
 
 function showAdminView(){
-  voterView.style.display = 'none';
-  adminView.style.display = 'block';
+
+  voterView.style.display =
+    'none';
+
+  adminView.style.display =
+    'block';
+
 }
 
-voterTabBtn.onclick = showVoterView;
-adminTabBtn.onclick = showAdminView;
 
-document.getElementById('loginForm').onsubmit = async (e) => {
-  e.preventDefault();
+voterTabBtn.onclick =
+  showVoterView;
 
-  const email =
-    document.getElementById('adminEmail').value.trim();
 
-  const password =
-    document.getElementById('adminPassword').value;
+adminTabBtn.onclick =
+  showAdminView;
 
-  const { error } =
-    await sb.auth.signInWithPassword({
-      email,
-      password
-    });
 
-  if(error){
-    const box = document.getElementById('loginMessage');
 
-    box.textContent = error.message;
-    box.className = 'message error show';
+/* ========================= */
+/* ADMIN LOGIN               */
+/* ========================= */
 
-    return;
-  }
-
-  adminLogin.style.display = 'none';
-  adminPanel.style.display = 'block';
-};
-    async function loadContests(){
-
-  const { data, error } = await sb
-    .from('contests')
-    .select('id,name')
-    .order('created_at', { ascending:false });
-
-  if(error){
-    console.error(error);
-    return;
-  }
-
-  const select = document.getElementById('contestSelect');
-
-  select.innerHTML =
-    '<option value="">Choose a contest...</option>';
-
-  data.forEach(contest => {
-
-    const option = document.createElement('option');
-
-    option.value = contest.id;
-    option.textContent = contest.name;
-
-    select.appendChild(option);
-  });
-}
-    async function loadDoors(){
-
-  const contestId =
-    document.getElementById('contestSelect').value;
-
-  const list =
-    document.getElementById('doorList');
-
-  if(!contestId){
-    list.textContent =
-      'Select a contest to view its doors.';
-    return;
-  }
-
-  const { data, error } = await sb
-    .from('doors')
-    .select('id,door_number')
-    .eq('contest_id', contestId)
-    .order('door_number');
-
-  if(error){
-    list.textContent = error.message;
-    return;
-  }
-
-  if(!data.length){
-    list.textContent =
-      'No doors added yet.';
-    return;
-  }
-
-  list.innerHTML = data
-    .map(door => `🚪 Door #${door.door_number}`)
-    .join('<br>');
-}
-
-    document.getElementById('contestSelect').onchange =
-async () => {
-  await loadDoors();
-  await updateVotingStatus();
-};
-
-document.getElementById('addDoorForm').onsubmit =
+document
+  .getElementById('loginForm')
+  .onsubmit =
 async (e) => {
 
   e.preventDefault();
 
-  const contestId =
-    document.getElementById('contestSelect').value;
 
-  const doorNumber =
-    document.getElementById('doorNumberAdmin')
-      .value.trim();
+  const email =
+    document
+      .getElementById('adminEmail')
+      .value
+      .trim();
 
-  const box =
-    document.getElementById('doorMessage');
 
-  if(!contestId){
-    box.textContent =
-      'Please select a contest first.';
-    box.className =
-      'message error show';
-    return;
-  }
+  const password =
+    document
+      .getElementById('adminPassword')
+      .value;
 
-  const { error } = await sb
-    .from('doors')
-    .insert({
-      contest_id: contestId,
-      door_number: doorNumber
-    });
+
+  const { error } =
+    await sb.auth
+      .signInWithPassword({
+        email,
+        password
+      });
+
 
   if(error){
-    box.textContent = error.message;
+
+    const box =
+      document.getElementById(
+        'loginMessage'
+      );
+
+    box.textContent =
+      error.message;
+
     box.className =
       'message error show';
+
     return;
+
   }
 
+
   document
-    .getElementById('addDoorForm')
+    .getElementById('loginMessage')
+    .className =
+      'message';
+
+
+  adminLogin.style.display =
+    'none';
+
+  adminPanel.style.display =
+    'block';
+
+
+  await loadContests();
+
+};
+
+
+
+/* ========================= */
+/* LOAD CONTESTS             */
+/* ========================= */
+
+async function loadContests(){
+
+  const { data, error } =
+    await sb
+      .from('contests')
+      .select(
+        'id,name,voting_open'
+      )
+      .order(
+        'created_at',
+        {
+          ascending:false
+        }
+      );
+
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  const select =
+    document.getElementById(
+      'contestSelect'
+    );
+
+
+  select.innerHTML =
+    '<option value="">Choose a contest...</option>';
+
+
+  data.forEach(contest => {
+
+    const option =
+      document.createElement(
+        'option'
+      );
+
+    option.value =
+      contest.id;
+
+    option.textContent =
+      contest.name;
+
+    select.appendChild(
+      option
+    );
+
+  });
+
+}
+
+
+
+/* ========================= */
+/* CREATE CONTEST            */
+/* ========================= */
+
+document
+  .getElementById(
+    'createContestForm'
+  )
+  .onsubmit =
+async (e) => {
+
+  e.preventDefault();
+
+
+  const name =
+    document
+      .getElementById(
+        'contestName'
+      )
+      .value
+      .trim();
+
+
+  const {
+    data: { user }
+  } =
+    await sb.auth.getUser();
+
+
+  if(!user){
+
+    return;
+
+  }
+
+
+  const { error } =
+    await sb
+      .from('contests')
+      .insert({
+        name:name,
+        created_by:user.id
+      });
+
+
+  const box =
+    document.getElementById(
+      'contestMessage'
+    );
+
+
+  if(error){
+
+    box.textContent =
+      error.message;
+
+    box.className =
+      'message error show';
+
+    return;
+
+  }
+
+
+  document
+    .getElementById(
+      'createContestForm'
+    )
     .reset();
 
+
   box.textContent =
-    'Door added successfully.';
+    'Contest created successfully.';
+
+
   box.className =
     'message success show';
 
-  await loadDoors();
+
+  await loadContests();
+
 };
-    async function updateVotingStatus(){
+
+
+
+/* ========================= */
+/* LOAD DOORS                */
+/* ========================= */
+
+async function loadDoors(){
 
   const contestId =
-    document.getElementById('contestSelect').value;
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value;
 
-  const status =
-    document.getElementById('votingStatus');
+
+  const list =
+    document.getElementById(
+      'doorList'
+    );
+
 
   if(!contestId){
-    status.textContent =
-      'Select a contest to view voting status.';
+
+    list.textContent =
+      'Select a contest to view its doors.';
+
     return;
+
   }
 
-  const { data, error } = await sb
-    .from('contests')
-    .select('voting_open')
-    .eq('id', contestId)
-    .single();
+
+  const { data, error } =
+    await sb
+      .from('doors')
+      .select(
+        'id,door_number'
+      )
+      .eq(
+        'contest_id',
+        contestId
+      )
+      .order(
+        'door_number'
+      );
+
 
   if(error){
-    status.textContent = error.message;
+
+    list.textContent =
+      error.message;
+
     return;
+
   }
+
+
+  if(!data.length){
+
+    list.textContent =
+      'No doors added yet.';
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    data
+      .map(
+        door =>
+          `<div class="doorItem">
+             🚪 Door #${door.door_number}
+           </div>`
+      )
+      .join('');
+
+}
+
+
+
+/* ========================= */
+/* ADD DOOR                  */
+/* ========================= */
+
+document
+  .getElementById(
+    'addDoorForm'
+  )
+  .onsubmit =
+async (e) => {
+
+  e.preventDefault();
+
+
+  const contestId =
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value;
+
+
+  const doorNumber =
+    document
+      .getElementById(
+        'doorNumberAdmin'
+      )
+      .value
+      .trim();
+
+
+  const box =
+    document.getElementById(
+      'doorMessage'
+    );
+
+
+  if(!contestId){
+
+    box.textContent =
+      'Please select a contest first.';
+
+    box.className =
+      'message error show';
+
+    return;
+
+  }
+
+
+  const { error } =
+    await sb
+      .from('doors')
+      .insert({
+        contest_id:contestId,
+        door_number:doorNumber
+      });
+
+
+  if(error){
+
+    box.textContent =
+      error.message;
+
+    box.className =
+      'message error show';
+
+    return;
+
+  }
+
+
+  document
+    .getElementById(
+      'addDoorForm'
+    )
+    .reset();
+
+
+  box.textContent =
+    'Door added successfully.';
+
+
+  box.className =
+    'message success show';
+
+
+  await loadDoors();
+
+  await loadVoterContest();
+
+  await loadResults();
+
+};
+
+
+
+/* ========================= */
+/* VOTING STATUS             */
+/* ========================= */
+
+async function updateVotingStatus(){
+
+  const contestId =
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value;
+
+
+  const status =
+    document.getElementById(
+      'votingStatus'
+    );
+
+
+  if(!contestId){
+
+    status.textContent =
+      'Select a contest to view voting status.';
+
+    return;
+
+  }
+
+
+  const { data, error } =
+    await sb
+      .from('contests')
+      .select(
+        'voting_open'
+      )
+      .eq(
+        'id',
+        contestId
+      )
+      .single();
+
+
+  if(error){
+
+    status.textContent =
+      error.message;
+
+    return;
+
+  }
+
 
   status.textContent =
     data.voting_open
       ? '✅ Voting is OPEN'
       : '🔒 Voting is CLOSED';
+
 }
-    <div style="margin-top:24px;">
 
-  <h3>Results</h3>
 
-  <p id="ballotCount" class="muted">
-    Select a contest to view results.
-  </p>
 
-  <div id="resultsList" class="muted"></div>
+/* ========================= */
+/* ADMIN RESULTS             */
+/* ========================= */
 
-</div>
+async function loadResults(){
+
+  const contestId =
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value;
+
+
+  const countBox =
+    document.getElementById(
+      'ballotCount'
+    );
+
+
+  const resultsBox =
+    document.getElementById(
+      'resultsList'
+    );
+
+
+  if(!contestId){
+
+    countBox.textContent =
+      'Select a contest to view results.';
+
+    resultsBox.innerHTML =
+      '';
+
+    return;
+
+  }
+
+
+  const {
+    data: contest,
+    error: contestError
+  } =
+    await sb
+      .from('contests')
+      .select(
+        'voting_open'
+      )
+      .eq(
+        'id',
+        contestId
+      )
+      .single();
+
+
+  if(contestError){
+
+    countBox.textContent =
+      contestError.message;
+
+    resultsBox.innerHTML =
+      '';
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await sb.rpc(
+      'get_door_standings',
+      {
+        p_contest_id:
+          contestId
+      }
+    );
+
+
+  if(error){
+
+    countBox.textContent =
+      error.message;
+
+    resultsBox.innerHTML =
+      '';
+
+    return;
+
+  }
+
+
+  const totalVotes =
+    data.reduce(
+      (sum,door) =>
+        sum +
+        Number(door.votes),
+      0
+    );
+
+
+  countBox.innerHTML =
+    `<span class="totalVotes">
+       Total ballots submitted:
+       ${totalVotes}
+     </span>`;
+
+
+  /*
+    While voting is open,
+    show ballot count but
+    hide individual results.
+  */
+
+  if(contest.voting_open){
+
+    resultsBox.innerHTML =
+      '<p>🔒 Individual results are hidden while voting is open.</p>';
+
+    return;
+
+  }
+
+
+  if(!data.length){
+
+    resultsBox.innerHTML =
+      '<p>No doors have been added yet.</p>';
+
+    return;
+
+  }
+
+
+  let rank = 1;
+
+
+  resultsBox.innerHTML =
+    data
+      .map(
+        door => {
+
+          const votes =
+            Number(
+              door.votes
+            );
+
+          const result =
+            `
+            <div class="resultItem">
+
+              <span class="resultRank">
+                ${rank}.
+                🚪 Door #${door.door_number}
+              </span>
+
+              <span>
+                ${votes}
+                vote${votes === 1 ? '' : 's'}
+              </span>
+
+            </div>
+            `;
+
+          rank++;
+
+          return result;
+
+        }
+      )
+      .join('');
+
+}
+
+
+
+/* ========================= */
+/* CONTEST SELECTION         */
+/* ========================= */
+
+document
+  .getElementById(
+    'contestSelect'
+  )
+  .onchange =
+async () => {
+
+  await loadDoors();
+
+  await updateVotingStatus();
+
+  await loadResults();
+
+};
+
+
+
+/* ========================= */
+/* OPEN VOTING               */
+/* ========================= */
+
+document
+  .getElementById(
+    'openVotingBtn'
+  )
+  .onclick =
+async () => {
+
+  const contestId =
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value;
+
+
+  if(!contestId){
+
+    return;
+
+  }
+
+
+  const { error } =
+    await sb
+      .from('contests')
+      .update({
+        voting_open:true
+      })
+      .eq(
+        'id',
+        contestId
+      );
+
+
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await updateVotingStatus();
+
+  await loadResults();
+
+  await loadVoterContest();
+
+};
+
+
+
+/* ========================= */
+/* CLOSE VOTING              */
+/* ========================= */
+
+document
+  .getElementById(
+    'closeVotingBtn'
+  )
+  .onclick =
+async () => {
+
+  const contestId =
+    document
+      .getElementById(
+        'contestSelect'
+      )
+      .value;
+
+
+  if(!contestId){
+
+    return;
+
+  }
+
+
+  const { error } =
+    await sb
+      .from('contests')
+      .update({
+        voting_open:false
+      })
+      .eq(
+        'id',
+        contestId
+      );
+
+
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await updateVotingStatus();
+
+  await loadResults();
+
+  await loadVoterContest();
+
+};
+
+
+
+/* ========================= */
+/* LOAD VOTER CONTEST        */
+/* ========================= */
+
 async function loadVoterContest(){
 
-  const { data: contests, error } = await sb
-    .from('contests')
-    .select('id,name,voting_open')
-    .order('created_at', { ascending:false })
-    .limit(1);
+  const {
+    data:contests,
+    error
+  } =
+    await sb
+      .from('contests')
+      .select(
+        'id,name,voting_open'
+      )
+      .order(
+        'created_at',
+        {
+          ascending:false
+        }
+      )
+      .limit(1);
 
-  if(error || !contests || !contests.length){
+
+  if(
+    error ||
+    !contests ||
+    !contests.length
+  ){
+
     return;
+
   }
 
-  const contest = contests[0];
 
-  const { data: doors, error: doorError } = await sb
-    .from('doors')
-    .select('door_number')
-    .eq('contest_id', contest.id)
-    .order('door_number');
+  const contest =
+    contests[0];
+
+
+  const {
+    data:doors,
+    error:doorError
+  } =
+    await sb
+      .from('doors')
+      .select(
+        'door_number'
+      )
+      .eq(
+        'contest_id',
+        contest.id
+      )
+      .order(
+        'door_number'
+      );
+
 
   if(doorError){
+
     return;
+
   }
 
+
   const select =
-    document.getElementById('doorNumber');
+    document.getElementById(
+      'doorNumber'
+    );
+
 
   select.innerHTML =
     '<option value="">Choose a door...</option>';
 
-  doors.forEach(door => {
 
-    const option =
-      document.createElement('option');
+  doors.forEach(
+    door => {
 
-    option.value = door.door_number;
-    option.textContent =
-      `Door #${door.door_number}`;
+      const option =
+        document.createElement(
+          'option'
+        );
 
-    select.appendChild(option);
-  });
 
-  document.getElementById('submitVoteBtn').disabled =
-    !contest.voting_open;
+      option.value =
+        door.door_number;
 
-  window.currentVoterContest = contest;
+
+      option.textContent =
+        `Door #${door.door_number}`;
+
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  document
+    .getElementById(
+      'submitVoteBtn'
+    )
+    .disabled =
+      !contest.voting_open;
+
+
+  window.currentVoterContest =
+    contest;
+
 }
-  
-function getDeviceToken(contestId){
+
+
+
+/* ========================= */
+/* DEVICE TOKEN              */
+/* ========================= */
+
+function getDeviceToken(
+  contestId
+){
 
   const key =
     `halloween-voter-token-${contestId}`;
 
+
   let token =
-    localStorage.getItem(key);
+    localStorage.getItem(
+      key
+    );
+
 
   if(!token){
-    token =
-      crypto.randomUUID() +
-      crypto.randomUUID();
+
+    if(
+      window.crypto &&
+      crypto.randomUUID
+    ){
+
+      token =
+        crypto.randomUUID() +
+        crypto.randomUUID();
+
+    }else{
+
+      token =
+        Date.now().toString() +
+        Math.random()
+          .toString(36)
+          .substring(2) +
+        Math.random()
+          .toString(36)
+          .substring(2);
+
+    }
+
 
     localStorage.setItem(
       key,
       token
     );
+
   }
 
+
   return token;
+
 }
-    document.getElementById('voteForm').onsubmit =
+
+
+
+/* ========================= */
+/* SUBMIT VOTE               */
+/* ========================= */
+
+document
+  .getElementById(
+    'voteForm'
+  )
+  .onsubmit =
 async (e) => {
 
   e.preventDefault();
 
+
   const contest =
     window.currentVoterContest;
 
+
   if(!contest){
+
     return;
+
   }
 
+
   const doorNumber =
-    document.getElementById('doorNumber').value;
+    document
+      .getElementById(
+        'doorNumber'
+      )
+      .value;
+
+
+  if(!doorNumber){
+
+    return;
+
+  }
+
 
   const token =
-    getDeviceToken(contest.id);
+    getDeviceToken(
+      contest.id
+    );
 
-  const { error } = await sb.rpc(
-    'submit_door_vote',
-    {
-      p_contest_id: contest.id,
-      p_door_number: doorNumber,
-      p_voter_token: token
-    }
-  );
+
+  const {
+    error
+  } =
+    await sb.rpc(
+      'submit_door_vote',
+      {
+        p_contest_id:
+          contest.id,
+
+        p_door_number:
+          doorNumber,
+
+        p_voter_token:
+          token
+      }
+    );
+
 
   const box =
-    document.getElementById('voteMessage');
+    document.getElementById(
+      'voteMessage'
+    );
+
 
   if(error){
 
     if(
       error.message
         .toLowerCase()
-        .includes('already')
+        .includes(
+          'already'
+        )
     ){
+
       box.textContent =
         'A vote has already been submitted from this browser/device.';
+
     }else{
+
       box.textContent =
         error.message;
+
     }
+
 
     box.className =
       'message error show';
 
+
     return;
+
   }
+
 
   box.textContent =
     'Vote submitted. Thank you! 🎃';
 
+
   box.className =
     'message success show';
 
-  document.getElementById(
-    'submitVoteBtn'
-  ).disabled = true;
+
+  document
+    .getElementById(
+      'submitVoteBtn'
+    )
+    .disabled =
+      true;
+
 };
-document.getElementById('openVotingBtn').onclick =
+
+
+
+/* ========================= */
+/* LOGOUT                    */
+/* ========================= */
+
+document
+  .getElementById(
+    'logoutBtn'
+  )
+  .onclick =
 async () => {
 
-  const contestId =
-    document.getElementById('contestSelect').value;
-
-  if(!contestId) return;
-
-  await sb
-    .from('contests')
-    .update({ voting_open:true })
-    .eq('id', contestId);
-
-  await updateVotingStatus();
-};
-
-document.getElementById('closeVotingBtn').onclick =
-async () => {
-
-  const contestId =
-    document.getElementById('contestSelect').value;
-
-  if(!contestId) return;
-
-  await sb
-    .from('contests')
-    .update({ voting_open:false })
-    .eq('id', contestId);
-
-  await updateVotingStatus();
-};
-document.getElementById('createContestForm').onsubmit = async (e) => {
-  e.preventDefault();
-
-  const name =
-    document.getElementById('contestName').value.trim();
-
-  const {
-    data: { user }
-  } = await sb.auth.getUser();
-
-  if(!user){
-    return;
-  }
-
-  const { error } = await sb
-    .from('contests')
-    .insert({
-      name,
-      created_by:user.id
-    });
-
-  const box = document.getElementById('contestMessage');
-
-  if(error){
-    box.textContent = error.message;
-    box.className = 'message error show';
-    return;
-  }
-
-  document.getElementById('createContestForm').reset();
-
-  box.textContent = 'Contest created successfully.';
-  box.className = 'message success show';
-  await loadContests();
-};
-document.getElementById('logoutBtn').onclick = async () => {
   await sb.auth.signOut();
 
-  adminPanel.style.display = 'none';
-  adminLogin.style.display = 'block';
-  await loadContests();
-  
+
+  adminPanel.style.display =
+    'none';
+
+
+  adminLogin.style.display =
+    'block';
+
 };
+
+
+
+/* ========================= */
+/* CHECK LOGIN               */
+/* ========================= */
 
 async function checkLogin(){
 
   const {
-    data: { session }
-  } = await sb.auth.getSession();
+    data:{
+      session
+    }
+  } =
+    await sb.auth
+      .getSession();
+
 
   if(session){
-    adminLogin.style.display = 'none';
-    adminPanel.style.display = 'block';
+
+    adminLogin.style.display =
+      'none';
+
+
+    adminPanel.style.display =
+      'block';
+
+
     await loadContests();
+
   }else{
-    adminLogin.style.display = 'block';
-    adminPanel.style.display = 'none';
+
+    adminLogin.style.display =
+      'block';
+
+
+    adminPanel.style.display =
+      'none';
+
   }
 
 }
 
+
+
+/* ========================= */
+/* START APP                 */
+/* ========================= */
+
 checkLogin();
-    loadVoterContest();
-  </script>
+
+loadVoterContest();
+
+
+</script>
+
 
 </body>
+
 </html>
